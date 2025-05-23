@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Diagram Gallery - MCP Server Validation Results</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        h1, h2 {
+            color: #0078d4; /* Azure blue */
+        }
+        
+        .status {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #155724;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .diagram-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .diagram-card img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .diagram-card h3 {
+            margin-top: 0;
+            color: #0078d4;
+        }
+        
+        .description {
+            text-align: left;
+            font-size: 0.9em;
+            color: #666;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .metadata {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Azure Diagram Gallery</h1>
+    <p>MCP Server Validation Results</p>
+    
+    <div class="status">
+        <strong>✅ Validation Successful!</strong><br>
+        All 3 test diagrams were generated successfully by the Azure Diagram Generator MCP Server.
+    </div>
+    
+    <div class="gallery">
+        <div class="diagram-card">
+            <h3>Simple Web App Architecture</h3>
+            <img src="diagrams/simple_web_app_test.png" alt="Simple Web App Architecture">
+            <div class="description">
+                <strong>Description:</strong> A simple architecture with a web application connected to a SQL Database. 
+                Both resources are in the East US region with the web app on Standard S1 tier and database on S2, 
+                placed in a single resource group called 'WebApp-RG'.
+            </div>
+            <div class="metadata">
+                Format: PNG | Layout: Top-to-Bottom
+            </div>
+        </div>
+        
+        <div class="diagram-card">
+            <h3>Microservices Architecture</h3>
+            <img src="diagrams/microservices_test.png" alt="Microservices Architecture">
+            <div class="description">
+                <strong>Description:</strong> A microservices architecture with three services (UserService, OrderService, 
+                ProductService), each with its own database. Services communicate through Azure Service Bus, 
+                with Azure Key Vault for secrets and Azure Active Directory for protection.
+            </div>
+            <div class="metadata">
+                Format: PNG | Layout: Left-to-Right
+            </div>
+        </div>
+        
+        <div class="diagram-card">
+            <h3>Multi-Tier Application</h3>
+            <img src="diagrams/multi_tier_test.svg" alt="Multi-Tier Application">
+            <div class="description">
+                <strong>Description:</strong> A multi-tier application with front-end web app, middle-tier API app, 
+                and back-end SQL database. Includes blob storage for file uploads with resources grouped 
+                across 'Frontend-RG' and 'Backend-RG' resource groups.
+            </div>
+            <div class="metadata">
+                Format: SVG | Layout: Top-to-Bottom
+            </div>
+        </div>
+    </div>
+    
+    <h2>Validation Summary</h2>
+    <ul>
+        <li><strong>MCP Server Status:</strong> ✅ Working correctly</li>
+        <li><strong>Diagram Generation:</strong> ✅ All formats supported (PNG, SVG)</li>
+        <li><strong>Layout Options:</strong> ✅ Both Top-to-Bottom and Left-to-Right layouts working</li>
+        <li><strong>Azure Components:</strong> ✅ Successfully mapped and rendered</li>
+        <li><strong>Resource Grouping:</strong> ✅ Clusters and relationships working</li>
+    </ul>
+    
+    <p><strong>Next Steps:</strong> The MCP server is validated and ready for use. You can now use it with the API server and web client.</p>
+</body>
+</html>

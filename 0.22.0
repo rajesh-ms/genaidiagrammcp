@@ -1,0 +1,4 @@
+Requirement already satisfied: uvicorn in c:\learn\genaidiagramsasmcp\.venv\lib\site-packages (0.34.2)
+Requirement already satisfied: click>=7.0 in c:\learn\genaidiagramsasmcp\.venv\lib\site-packages (from uvicorn) (8.2.1)
+Requirement already satisfied: h11>=0.8 in c:\learn\genaidiagramsasmcp\.venv\lib\site-packages (from uvicorn) (0.16.0)
+Requirement already satisfied: colorama in c:\learn\genaidiagramsasmcp\.venv\lib\site-packages (from click>=7.0->uvicorn) (0.4.6)

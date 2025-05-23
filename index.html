@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Architecture Diagram Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        h1, h2 {
+            color: #0078d4; /* Azure blue */
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+            }
+            
+            .input-section {
+                flex: 1;
+                max-width: 50%;
+            }
+            
+            .output-section {
+                flex: 1;
+            }
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        button {
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        
+        button:hover {
+            background-color: #0063b1;
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .diagram-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+            border: 1px dashed #ccc;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        
+        .diagram-container img {
+            max-width: 100%;
+            max-height: 600px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #0078d4;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            color: #e81123;
+            background-color: #fde7e9;
+            border: 1px solid #e81123;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .example-section {
+            margin-top: 30px;
+        }
+        
+        .example {
+            cursor: pointer;
+            padding: 10px;
+            background-color: #f0f8ff;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            transition: background-color 0.2s;
+        }
+        
+        .example:hover {
+            background-color: #e0f0ff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Azure Architecture Diagram Generator</h1>
+    <p>Describe your Azure architecture in natural language, and this tool will generate a diagram for you.</p>
+    
+    <div class="container">
+        <div class="input-section">
+            <div class="card">
+                <h2>Input</h2>
+                <div class="form-group">
+                    <label for="architecture-description">Architecture Description:</label>
+                    <textarea id="architecture-description" placeholder="Describe your Azure architecture here. For example: 'A web application with a SQL Database backend, protected by a firewall.'"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="output-format">Output Format:</label>
+                    <select id="output-format">
+                        <option value="png">PNG</option>
+                        <option value="svg">SVG</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="layout-direction">Layout Direction:</label>
+                    <select id="layout-direction">
+                        <option value="TB">Top to Bottom</option>
+                        <option value="LR">Left to Right</option>
+                    </select>
+                </div>
+                
+                <button id="generate-button" onclick="generateDiagram()">Generate Diagram</button>
+                <div id="error-message" class="error-message"></div>
+            </div>
+            
+            <div class="card example-section">
+                <h2>Examples</h2>
+                <div class="example" onclick="loadExample(1)">
+                    <strong>Simple Web App</strong>: A web app connected to a SQL database, all within a single resource group.
+                </div>
+                <div class="example" onclick="loadExample(2)">
+                    <strong>Multi-Tier Application</strong>: A front-end web app, a middle-tier API app, and a back-end SQL database with a blob storage for file uploads.
+                </div>
+                <div class="example" onclick="loadExample(3)">
+                    <strong>Microservices Architecture</strong>: Three microservices communicating through a service bus, with each microservice having its own database.
+                </div>
+            </div>
+        </div>
+        
+        <div class="output-section">
+            <div class="card">
+                <h2>Generated Diagram</h2>
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Generating diagram...</p>
+                </div>
+                <div id="diagram-container" class="diagram-container">
+                    <p id="placeholder-text">Your diagram will appear here after generation.</p>
+                    <img id="diagram" style="display: none;" />
+                </div>
+                <div style="margin-top: 15px; text-align: right;">
+                    <button id="download-button" style="display: none;" onclick="downloadDiagram()">Download Diagram</button>
+                </div>
+            </div>
+        </div>
+    </div>
+      <script>
+        // This makes actual HTTP requests to the API server
+        // which in turn communicates with the MCP server
+        
+        let currentDiagramUrl = null;
+        let currentFormat = "png";
+        
+        function showLoading(isLoading) {
+            const loadingElement = document.getElementById('loading');
+            const generateButton = document.getElementById('generate-button');
+            const placeholderText = document.getElementById('placeholder-text');
+            
+            if (isLoading) {
+                loadingElement.style.display = 'block';
+                generateButton.disabled = true;
+                if (placeholderText) placeholderText.style.display = 'none';
+            } else {
+                loadingElement.style.display = 'none';
+                generateButton.disabled = false;
+            }
+        }
+        
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+        
+        function hideError() {
+            const errorElement = document.getElementById('error-message');
+            errorElement.style.display = 'none';
+        }
+        
+        function generateDiagram() {
+            const description = document.getElementById('architecture-description').value;
+            const outputFormat = document.getElementById('output-format').value;
+            const layoutDirection = document.getElementById('layout-direction').value;
+            
+            if (!description.trim()) {
+                showError('Please provide an architecture description.');
+                return;
+            }
+            
+            hideError();
+            showLoading(true);
+            
+            // Call the API server
+            callApiServer(description, outputFormat, layoutDirection);
+        }
+          function callApiServer(description, outputFormat, layoutDirection) {
+            // Try to connect to the API server
+            // In a real production environment, you'd want to host this on a real server
+            const apiUrl = 'http://localhost:8000/generate-diagram';
+            
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    architecture_description: description,
+                    output_format: outputFormat,
+                    layout_direction: layoutDirection
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.detail || `API error (${response.status}): ${response.statusText}`);
+                    }).catch(e => {
+                        // If we can't parse the JSON response
+                        throw new Error(`API error (${response.status}): ${response.statusText}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Create a data URL from the base64 image data
+                const imageData = data.image_data;
+                const imageFormat = data.image_format;
+                const imageSrc = `data:image/${imageFormat};base64,${imageData}`;
+                
+                displayDiagram(imageSrc, imageFormat);
+                showLoading(false);
+            })            .catch(error => {
+                console.error('Error:', error);
+                showLoading(false);
+                
+                // Fall back to simulation if the API server isn't running
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    showError('Could not connect to API server. Make sure the server is running using "Run All Services" task or Start-Servers.ps1 script.');
+                    setTimeout(() => {
+                        simulateDiagram(description, outputFormat);
+                    }, 3000);
+                } else {
+                    showError(`Error: ${error.message}`);
+                }
+            });
+        }
+        
+        function simulateDiagram(description, outputFormat) {
+            // Fall back to simulation if the API server isn't running
+            setTimeout(() => {
+                const imageSrc = "https://learn.microsoft.com/en-us/azure/architecture/icons/azure-stack-architecture.svg";
+                displayDiagram(imageSrc, outputFormat);
+            }, 1000);
+        }
+          function displayDiagram(imageSrc, format) {
+            const diagramImg = document.getElementById('diagram');
+            const placeholderText = document.getElementById('placeholder-text');
+            const downloadButton = document.getElementById('download-button');
+            
+            diagramImg.src = imageSrc;
+            diagramImg.style.display = 'block';
+            if (placeholderText) placeholderText.style.display = 'none';
+            downloadButton.style.display = 'inline-block';
+            
+            currentDiagramUrl = imageSrc;
+            currentFormat = format;
+        }
+        
+        function downloadDiagram() {
+            if (!currentDiagramUrl) return;
+            
+            const link = document.createElement('a');
+            link.href = currentDiagramUrl;
+            link.download = `azure-diagram.${currentFormat}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function loadExample(exampleNum) {
+            const descriptionElement = document.getElementById('architecture-description');
+            
+            switch(exampleNum) {
+                case 1:
+                    descriptionElement.value = "I need a simple architecture with a web application connected to a SQL Database. Both resources should be in the East US region. The web app should be on a Standard S1 tier and the database on S2. Place everything in a single resource group called 'WebApp-RG'.";
+                    break;
+                case 2:
+                    descriptionElement.value = "Create a multi-tier application with a front-end web app, a middle-tier API app, and a back-end SQL database. Add blob storage for file uploads. The front-end connects to the API, and the API connects to both the database and storage. All resources should be in the West US 2 region. Group the web and API apps in a 'Frontend-RG' resource group and the database and storage in a 'Backend-RG' resource group.";
+                    break;
+                case 3:
+                    descriptionElement.value = "Design a microservices architecture with three services: UserService, OrderService, and ProductService. Each service has its own database. The services communicate through an Azure Service Bus. Include Azure Key Vault for secrets management. Protect the architecture with Azure Active Directory. Place everything in the Central US region within a single virtual network.";
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+fastapi==0.100.0
+uvicorn>=0.23.1
+python-dotenv>=1.0.0
+requests>=2.28.0
+starlette>=0.27.0,<0.28.0
+./mcp-1.6.0-py3-none-any.whl
+matplotlib>=3.7.0
+diagrams>=0.23.0
+rsaz-diagrams>=0.24.0
+graphviz>=0.20.0

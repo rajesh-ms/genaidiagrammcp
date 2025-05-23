@@ -1,286 +1,221 @@
 # Azure Architecture Diagram Generator with MCP
 
-This project uses the Model Context Protocol (MCP) to generate Azure architecture diagrams from natural language descriptions. It provides a web interface for users to describe their Azure architecture and view the generated diagram.
+An MCP (Model Context Protocol) Server that generates Azure architecture diagrams from natural language descriptions using AI and the Python diagrams library.
 
-## Features
+## 🚀 Features
 
-- **Natural Language Processing**: Converts text descriptions into structured JSON representations of Azure architectures using Azure OpenAI API
-- **Diagram Generation**: Creates visual diagrams from the structured JSON using the `diagrams` or `rsaz-diagrams` library
-- **MCP Server**: Exposes the functionality through an MCP server
-- **Web Client**: Provides a responsive web interface to interact with the system
+- **Natural Language Processing**: Convert plain English descriptions into structured Azure architecture diagrams
+- **MCP Server Integration**: Fully compatible with the Model Context Protocol for seamless integration
+- **Multiple Output Formats**: Generate diagrams in PNG or SVG formats
+- **Flexible Layouts**: Support for top-to-bottom (TB) and left-to-right (LR) diagram layouts
+- **Azure Resource Support**: Comprehensive support for Azure services including Web Apps, Databases, Storage, Networking, and more
+- **Docker Support**: Easy deployment with Docker and Docker Compose
+- **Web Interface**: Simple web client for testing and interaction
+- **Fallback Mechanisms**: Robust error handling with fallback servers
 
-## Architecture
+## 🏗️ Architecture
 
-The system consists of three main components:
+- **MCP Server**: Uses FastMCP Python library to create an MCP server
+- **AI Processing**: Azure OpenAI API processes natural language descriptions
+- **Diagram Generation**: Python `diagrams` library creates visual representations
+- **Web Client**: Static HTML interface for testing and demonstration
 
-1. **MCP Server** (`azure_diagram_server.py`): Processes natural language descriptions and generates diagrams
-2. **API Server** (`api_server.py`): Acts as a bridge between the web client and the MCP server
-3. **Web Client** (`index.html`): Provides a user interface for entering architecture descriptions and viewing diagrams
-
-## Prerequisites
+## 📋 Prerequisites
 
 - Python 3.8+
-- Graphviz (must be installed separately and added to PATH)
-- Azure OpenAI API access (optional but recommended for better results)
+- Graphviz (required by the diagrams library)
+- Azure OpenAI API access (optional, falls back to sample data)
+- Docker (for containerized deployment)
 
-## Installation
+## 🛠️ Installation
 
-1. Clone this repository
+### Option 1: Local Development
 
-2. Set up the environment:
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/rajesh-ms/genaidiagrammcp.git
+   cd genaidiagrammcp
+   ```
 
-```powershell
-# Create and activate a virtual environment
-python -m venv .venv
-.\.venv\Scripts\activate
+2. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-# Install dependencies
-pip install -r requirements.txt
-```
+3. **Install Graphviz**:
+   - Windows: Download from [Graphviz website](https://graphviz.org/download/)
+   - macOS: `brew install graphviz`
+   - Linux: `sudo apt-get install graphviz` (Ubuntu/Debian)
 
-3. Install Graphviz:
-   - **Windows**: Download from [Graphviz Downloads](https://graphviz.org/download/) and add to PATH
-   - **macOS**: `brew install graphviz`
-   - **Linux**: `apt-get install graphviz`
+4. **Set up environment variables** (optional):
+   ```bash
+   cp production.env.example .env
+   # Edit .env with your Azure OpenAI credentials
+   ```
 
-4. Configure Azure OpenAI API:
-   - Create a `.env` file in the project root with your Azure OpenAI credentials
+### Option 2: Docker Deployment
 
-## Running the Application
+1. **Clone and run with Docker**:
+   ```bash
+   git clone https://github.com/rajesh-ms/genaidiagrammcp.git
+   cd genaidiagrammcp
+   docker-compose up --build
+   ```
 
-### Using Docker (Recommended)
+## 🚦 Quick Start
 
-The easiest way to run the application is using Docker:
+### Running the MCP Server
 
 ```bash
-# Build and start the Docker container
-docker-compose up -d
-
-# Check the logs
-docker-compose logs -f
+python azure_diagram_server.py
 ```
 
-Once the container is running, you can access the web interface by opening `index.html` in your browser.
-
-### Using the Setup Script
-
-Run the provided setup script to install dependencies and configure the environment:
-
-```powershell
-.\setup.bat
-```
-
-### Using PowerShell Script
-
-The `Start-Servers.ps1` script provides a convenient way to run all services:
-
-```powershell
-# Start all services
-.\Start-Servers.ps1 -RunMcpServer -RunApiServer -OpenWebClient
-```
-
-### Running Services Individually
-
-1. **Run the MCP Server**:
-   ```powershell
-   python azure_diagram_server.py
-   ```
-
-2. **Run the API Server**:
-   ```powershell
-   python api_server.py
-   ```
-
-3. **Open the Web Client**:
-   - Open `index.html` in a web browser
-
-## Health Check
-
-To ensure all services are running correctly:
-
-```powershell
-python check_health.py
-```
-
-## Using the Web Interface
-
-1. Open `index.html` in a web browser
-2. Enter a natural language description of your Azure architecture
-3. Select output format and layout direction
-4. Click "Generate Diagram"
-5. View and download the generated diagram
-
-## Example Descriptions
-
-1. **Simple Web App**:
-   ```
-   I need a simple architecture with a web application connected to a SQL Database. Both resources should be in the East US region. The web app should be on a Standard S1 tier and the database on S2. Place everything in a single resource group called 'WebApp-RG'.
-   ```
-
-2. **Multi-Tier Application**:
-   ```
-   Create a multi-tier application with a front-end web app, a middle-tier API app, and a back-end SQL database. Add blob storage for file uploads. The front-end connects to the API, and the API connects to both the database and storage.
-   ```
-
-## Direct API Access
-
-The API server provides the following endpoints:
-
-- `GET /`: Health check endpoint
-- `POST /generate-diagram`: Generate a diagram from a description
-- `GET /diagram`: Retrieve the latest generated diagram
-
-## Docker Deployment
-
-This project includes Docker configuration for easy deployment:
-
-### Prerequisites for Docker Deployment
-
-- Docker and Docker Compose installed on your system
-- .env file with Azure OpenAI API credentials (optional)
-
-### Building and Running the Docker Container
-
-#### Option 1: Using Docker Manager (Recommended for Windows)
-
-The project includes a PowerShell script for easy Docker management:
-
-```powershell
-# Build and start the container
-.\Docker-Manager.ps1 -Build -Start
-
-# Check container health
-.\Docker-Manager.ps1 -Check
-
-# View container logs
-.\Docker-Manager.ps1 -Logs
-
-# Restart the container
-.\Docker-Manager.ps1 -Restart
-
-# Stop the container
-.\Docker-Manager.ps1 -Stop
-
-# Show help
-.\Docker-Manager.ps1 -Help
-```
-
-#### Option 2: Using Docker Compose Directly
-
-```bash
-# Build the Docker image
-docker-compose build
-
-# Start the container in the background
-docker-compose up -d
-
-# Check the logs
-docker-compose logs -f
-
-# Stop the container
-docker-compose down
-```
-
-### Docker Container Structure
-
-The Docker container runs both the MCP server and the API server:
-
-1. The MCP server runs in the background
-2. The API server runs in the foreground and listens on port 8000
-3. The web client can be accessed by opening `index.html` in your browser
-
-### Accessing the Dockerized API
-
-When running in Docker, the API server will be available at:
-
-- Local development: http://localhost:8000
-- Remote access: http://<your-server-ip>:8000
-
-## Troubleshooting
-
-### General Issues
-
-If you encounter issues:
-
-1. Check if the `.env` file is properly configured
-2. Verify that Graphviz is installed and in your PATH
-3. Ensure all services are running
-4. Check the console output for error messages
-
-### Docker-Specific Issues
-
-1. **Container not starting**:
-   - Check Docker logs: `docker-compose logs`
-   - Verify that port 8000 is not in use by another application
-
-2. **API server not accessible**:
-   - Ensure the container is running: `docker ps`
-   - Check if the API server started correctly: `docker-compose logs azure-diagram-generator`
-   - Try accessing the API directly: http://localhost:8000
-
-3. **Web client cannot connect to API**:
-   - Make sure the API server is running and accessible
-   - Check browser console for CORS errors (you may need to modify CORS settings)
-
-4. **Graphviz errors**:
-   - The Docker container includes Graphviz, but if you see errors, check the logs
-   - Try rebuilding the container: `docker-compose build --no-cache`
-
-## License
-
-[MIT License](LICENSE)
-{
-    "mcpServers": {
-        "azure-diagram-generator": {
-            "command": "python",
-            "args": [
-                "C:\\ABSOLUTE\\PATH\\TO\\azure_diagram_server.py"
-            ]
-        }
-    }
-}
-```
-
-Replace `C:\\ABSOLUTE\\PATH\\TO\\` with the absolute path to where you saved the server file.
-
-3. Restart Claude for Desktop.
-
-## Using the Web Client
-
-The web client (`index.html`) can interact with the MCP server through the API server:
-
-1. Start the API server:
+### Running the API Server
 
 ```bash
 python api_server.py
 ```
 
-2. Open the `index.html` file in your preferred web browser.
-3. Enter a description of your Azure architecture in the text area.
-4. Choose the output format (PNG or SVG) and layout direction.
-5. Click "Generate Diagram" to create and display the diagram.
+### Using PowerShell Scripts
 
-The web client will attempt to connect to the API server running at `http://127.0.0.1:8000`. If it can't connect, it will fall back to simulation mode with a placeholder diagram.
+```powershell
+# Start all services
+.\Start-Servers.ps1 -RunMcpServer -RunApiServer -OpenWebClient
 
-## Example Architecture Descriptions
+# Or use individual scripts
+.\Start-Docker.ps1      # Start with Docker
+.\Stop-Docker.ps1       # Stop Docker services
+```
 
-Here are some examples you can try:
+## 🧪 Testing
 
-1. **Simple Web App**: "A web app connected to a SQL database, all within a single resource group."
+### Direct MCP Testing
 
-2. **Multi-Tier Application**: "A front-end web app, a middle-tier API app, and a back-end SQL database with a blob storage for file uploads."
+```bash
+python test_mcp_direct.py
+```
 
-3. **Microservices Architecture**: "Three microservices communicating through a service bus, with each microservice having its own database."
+### Validation
 
-## Limitations
+```bash
+python validate_mcp.py
+```
 
-- The web client currently uses simulated responses and doesn't connect to the actual MCP server.
-- The diagram generation is dependent on Graphviz being properly installed.
-- Without Azure OpenAI API credentials, the server will return a simple sample diagram.
+### Web Interface
 
-## Future Improvements
+Open `index.html` in your browser or use the API endpoint:
 
-- Implement proper communication between the web client and MCP server
-- Add more Azure resource types to the diagrams mapping
-- Improve error handling and user feedback
-- Add support for more diagram customization options
+```bash
+curl -X POST http://localhost:8000/generate-diagram \
+  -H "Content-Type: application/json" \
+  -d '{
+    "architecture_description": "A web application with load balancer, two web servers, and a database",
+    "output_format": "png",
+    "layout_direction": "TB"
+  }'
+```
+
+## 📖 Usage Examples
+
+### Simple Web Application
+
+```text
+"A simple web application with a load balancer, two web servers, and a SQL database"
+```
+
+### Microservices Architecture
+
+```text
+"A microservices architecture with an API gateway, three microservices (user service, order service, payment service), a message queue, and separate databases for each service"
+```
+
+### Multi-tier Application
+
+```text
+"A three-tier application with a web tier using App Services, an application tier with Function Apps, and a data tier with Cosmos DB and Blob Storage"
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+- `AZURE_OPENAI_API_KEY`: Your Azure OpenAI API key
+- `AZURE_OPENAI_ENDPOINT`: Your Azure OpenAI endpoint URL
+- `AZURE_OPENAI_DEPLOYMENT`: Deployment name (default: gpt-4)
+- `AZURE_OPENAI_API_VERSION`: API version (default: 2023-05-15)
+- `API_HOST`: API server host (default: 127.0.0.1)
+- `API_PORT`: API server port (default: 8000)
+- `DEPLOYMENT_MODE`: development or production
+- `LOG_LEVEL`: Logging level (DEBUG, INFO, WARNING, ERROR)
+
+### Supported Azure Resources
+
+The server supports a wide range of Azure services:
+
+- **Compute**: App Services, Function Apps
+- **Database**: SQL Database, Cosmos DB
+- **Storage**: Blob Storage, File Storage
+- **Networking**: Load Balancers, Application Gateway, Virtual Networks
+- **Security**: Key Vault, Active Directory
+- **Integration**: Service Bus, Event Grid
+- **Analytics**: Synapse Analytics, Power BI
+- **AI/ML**: Cognitive Services, Machine Learning
+
+## 🐳 Docker
+
+The project includes comprehensive Docker support:
+
+- `Dockerfile`: Main application container
+- `docker-compose.yml`: Complete development environment
+- `entrypoint.sh`: Container startup script
+- Health checks and automatic restarts
+
+## 📁 Project Structure
+
+```
+├── azure_diagram_server.py     # Main MCP server
+├── api_server.py              # REST API server
+├── index.html                 # Web client interface
+├── docker-compose.yml         # Docker configuration
+├── requirements.txt           # Python dependencies
+├── validate_mcp.py           # Validation script
+├── test_mcp_direct.py        # Direct testing script
+├── diagrams/                 # Generated diagram outputs
+├── .vscode/                  # VS Code configuration
+└── scripts/                  # PowerShell management scripts
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Troubleshooting
+
+### Common Issues
+
+1. **Graphviz not found**: Ensure Graphviz is installed and in your PATH
+2. **Import errors**: Check that all Python dependencies are installed
+3. **Docker issues**: Ensure Docker Desktop is running
+4. **API connection**: Verify your Azure OpenAI credentials
+
+### Support
+
+- Check the [Issues](https://github.com/rajesh-ms/genaidiagrammcp/issues) page
+- Review the validation gallery at `validation_gallery.html`
+- Run the health check scripts in the repository
+
+## 🏷️ Version
+
+Current version: 1.0.0
+
+---
+
+Made with ❤️ for the Azure and MCP communities
